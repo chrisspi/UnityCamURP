@@ -6,21 +6,18 @@ using UnityEditor;
 public class HUGVRCamEditor : Editor
 {
 
-	SerializedProperty _flipImage;
-	SerializedProperty _blitLocaly;
-	void OnEnable()
-	{
-		_flipImage=serializedObject.FindProperty("Flip");
-		_blitLocaly=serializedObject.FindProperty("BlitLocaly");
-	}
+    SerializedProperty _flipImage;
+    void OnEnable()
+    {
+        _flipImage = serializedObject.FindProperty("Flip");
+    }
 
 
-	public override void OnInspectorGUI()
-	{
-		serializedObject.Update();
-		EditorGUILayout.PropertyField(_flipImage);
-		EditorGUILayout.PropertyField(_blitLocaly);
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+        EditorGUILayout.PropertyField(_flipImage);
 
-		serializedObject.ApplyModifiedProperties();
-	}
+        serializedObject.ApplyModifiedProperties();
+    }
 }
