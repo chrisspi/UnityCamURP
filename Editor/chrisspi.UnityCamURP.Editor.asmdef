@@ -1,0 +1,9 @@
+{
+    "name": "chrisspi.UnityCamURP.Editor",
+    "references": [
+        "chrisspi.UnityCamURP"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

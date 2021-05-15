@@ -1,0 +1,11 @@
+{
+    "name": "com.chrisspi.unitycamurp",
+    "version": "1.0.0",
+    "displayName": "UnityCam URP",
+    "description": "Outputs a camara as a webstream. Use folder 'RunMe First' to install a virtual Webcam. Forked from mrayy/UnityCam.",
+    "unity": "2019.3",
+    "unityRelease": "0f6",
+    "author": {
+      "name": "chrisspi"
+    }
+  }
