@@ -1,4 +1,4 @@
-﻿//Copyright (c) 2016  MHD Yamen Saraiji
+//Copyright (c) 2016  MHD Yamen Saraiji
 
 
 
@@ -25,6 +25,8 @@ public class UnityCam : MonoBehaviour
 
     public bool Flip = false;
 
+    public bool IsRecording = true;
+
     TextureWrapper _wrapper;
 
     OffscreenProcessor _BlitterProcessor;
@@ -32,6 +34,8 @@ public class UnityCam : MonoBehaviour
     private RenderTexture source;
     private int WIDTH = 1280;
     private int HEIGHT = 720;
+
+    private bool _deleteRenderTex = true;
 
 
     void Start()
@@ -43,13 +47,26 @@ public class UnityCam : MonoBehaviour
 
         _wrapper = new TextureWrapper();
 
-        source = new RenderTexture(WIDTH, HEIGHT, 24);
-        gameObject.GetComponent<Camera>().targetTexture = source;
+        //If Camera already has a RenderTexture use this
+        Texture tex = GetComponent<Camera>().targetTexture;
+        if (tex is RenderTexture)
+        {
+            source = (RenderTexture)tex;
+            _deleteRenderTex = false;
+        }
+        else
+        {
+            source = new RenderTexture(WIDTH, HEIGHT, 24);
+            GetComponent<Camera>().targetTexture = source;
+        }
     }
 
     private void Update()
     {
-        RenderImage(source);
+        if (IsRecording)
+        {
+            RenderImage(source);
+        }
     }
 
     public void RenderImage(RenderTexture source)
@@ -76,7 +93,11 @@ public class UnityCam : MonoBehaviour
             DestroyImmediate(obj);
         }
 
-        gameObject.GetComponent<Camera>().targetTexture = null;
-        source.Release();
+        if (_deleteRenderTex)
+        {
+            gameObject.GetComponent<Camera>().targetTexture = null;
+            source.Release();
+        }
+
     }
 }
