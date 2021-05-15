@@ -6,85 +6,77 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 
 [RequireComponent(typeof(Camera))]
-public class UnityCam : MonoBehaviour {
+public class UnityCam : MonoBehaviour
+{
 
-	internal const string DllName="UnityWebcam";
+    internal const string DllName = "UnityWebcam";
 
-	[DllImport(DllName,CallingConvention=CallingConvention.Cdecl)]
-	extern static private System.IntPtr CreateTextureWrapper();
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    extern static private System.IntPtr CreateTextureWrapper();
 
-	[DllImport(DllName,CallingConvention=CallingConvention.Cdecl)]
-	extern static private void DeleteTextureWrapper(System.IntPtr w);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    extern static private void DeleteTextureWrapper(System.IntPtr w);
 
-	[DllImport(DllName,CallingConvention=CallingConvention.Cdecl)]
-	extern static private bool SendTexture(System.IntPtr w,System.IntPtr textureID);
-
-
-	System.IntPtr _instance;
-
-	public Texture ResultTexture;
-
-	public bool Flip=false;
-	public bool BlitLocaly=true;
-
-	TextureWrapper _wrapper;
-
-	OffscreenProcessor _BlitterProcessor;
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    extern static private bool SendTexture(System.IntPtr w, System.IntPtr textureID);
 
 
-	void Start() {
-		//Init UnityWebCamera plugin
-		_instance = CreateTextureWrapper ();
+    System.IntPtr _instance;
 
-		_BlitterProcessor = new OffscreenProcessor ("UnityCam/Image/Blitter");
+    public bool Flip = false;
+
+    TextureWrapper _wrapper;
+
+    OffscreenProcessor _BlitterProcessor;
+
+    private RenderTexture source;
+    private int WIDTH = 1280;
+    private int HEIGHT = 720;
 
 
-		_wrapper = new TextureWrapper ();
+    void Start()
+    {
+        //Init UnityWebCamera plugin
+        _instance = CreateTextureWrapper();
 
-		//Add Post Renderer invoker, it will handle the rest
-		gameObject.AddComponent<UnityCamPostRenderer> ();
-	}
+        _BlitterProcessor = new OffscreenProcessor("UnityCam/Image/Blitter");
 
-	//will be invoked by HUGVRPostRenderer
-	public void RenderImage(RenderTexture source, RenderTexture destination) {
-		Texture tex = source;
+        _wrapper = new TextureWrapper();
 
-		if(Flip)
-			tex=_BlitterProcessor.ProcessTexture(tex,0);
-		else 
-			tex=_BlitterProcessor.ProcessTexture(tex,1);
-		
-		_wrapper.ConvertTexture (tex);
-		tex = _wrapper.WrappedTexture;
-		ResultTexture = tex;
+        source = new RenderTexture(WIDTH, HEIGHT, 24);
+        gameObject.GetComponent<Camera>().targetTexture = source;
+    }
 
-		//Send the rendered image to the plugin 
-		SendTexture (_instance,tex.GetNativeTexturePtr());
+    private void Update()
+    {
+        RenderImage(source);
+    }
 
-		if(BlitLocaly)
-			Graphics.Blit (source, destination);
-	}
+    public void RenderImage(RenderTexture source)
+    {
+        Texture tex = source;
 
-	void OnDestroy() {
-		for (int i = 0; i < transform.childCount; i++) {
-			GameObject obj = transform.GetChild(i).gameObject;
-			DestroyImmediate(obj);
-		}
-	}
+        if (Flip)
+            tex = _BlitterProcessor.ProcessTexture(tex, 0);
+        else
+            tex = _BlitterProcessor.ProcessTexture(tex, 1);
 
-	class RenderEvent : MonoBehaviour {
-		public Material material = default;
+        _wrapper.ConvertTexture(tex);
+        tex = _wrapper.WrappedTexture;
 
-		void OnRenderImage(RenderTexture source, RenderTexture destination) {
-			if (material == null) {
-				Graphics.Blit(source, destination);
-			}
-			Graphics.Blit(source, destination, material);
-		}
+        //Send the rendered image to the plugin 
+        SendTexture(_instance, tex.GetNativeTexturePtr());
+    }
 
-		void OnDestroy() {
-			DestroyImmediate(material);
-		}
-	}
+    void OnDestroy()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            GameObject obj = transform.GetChild(i).gameObject;
+            DestroyImmediate(obj);
+        }
 
+        gameObject.GetComponent<Camera>().targetTexture = null;
+        source.Release();
+    }
 }
