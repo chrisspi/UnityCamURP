@@ -6,6 +6,12 @@ This plugin provides a way for unity3D applications and games to output the view
 
 For example: Recording viewport in a webcamera capture software (Sharpcap), or using it in browser applications (tested in Chrome).
 
+Fork-Changes (chrisspi)
+=====
+- Render image in Update(), so it works with URP
+- IsRecording Property
+- UnityPackage for Package Manager (x64)
+
 Tested Platforms:
 -----------------
 - Tested on Windows 64 bits
@@ -18,10 +24,13 @@ Usage
 
 1) Before using, access folder "RunMe First", access the target platform folder (x32,x64) which depends on the application you will use to view the virtual camera in. Right click on "Register.bat" and choose "Run as Administrator" to register UnityCam plugin in Windows. A window will appear to confirm that the plugin was successfully registered.
 
-2) Inside unity, attach to the main camera the following component:
+2) Add to Dependencies: 
+> "com.chrisspi.unitycamurp": "https://github.com/chrisspi/UnityCamURP.git#UnityPackage"
+
+3) Inside unity, attach to the main camera the following component:
  UnityCam\Scripts\UnityCam.cs
 
-3) Hit Play, now unity will stream whatever being rendered as a webcamera. You can use it in browser or any video capture program via the new camera UnityCam.
+4) Hit Play, now unity will stream whatever being rendered as a webcamera. You can use it in browser or any video capture program via the new camera UnityCam.
 
 Check the included sample scene for a fully working example.
 
@@ -37,7 +46,8 @@ Thanks to @ArmainAP, this plugin now supports UE4. Plugin for UE4 is located und
 License
 -------
 
-Copyright (c) 2016 MHD Yamen Saraiji
+Copyright (c) 2016 MHD Yamen Saraiji\
+Copyright (c) 2021 Christian Spiekermann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
